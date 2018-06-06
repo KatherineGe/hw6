@@ -1,0 +1,144 @@
+int led = 13;
+int AIN1 = 7;
+int AIN2 = 8;
+int BIN1 = 9;
+int BIN2 = 10;
+int motorPWMA = 6;
+int motorPWMB = 5;
+int triggerPin = 11;
+int echoPin = 12;
+
+
+void setup() {
+  pinMode(led, OUTPUT);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+  Serial.begin(19200);
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  digitalWrite(triggerPin, LOW);
+}
+
+void forward(int howfast) {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+
+  analogWrite(motorPWMA, howfast);
+  analogWrite(motorPWMB, howfast);
+
+
+}
+
+void backward(int howfast) {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+
+  analogWrite(motorPWMA, howfast);
+  analogWrite(motorPWMB, howfast);
+
+
+}
+
+void right() {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+
+  analogWrite(motorPWMA, 255);
+  analogWrite(motorPWMB, 128);
+
+
+}
+
+void left() {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+
+  analogWrite(motorPWMA, 128);
+  analogWrite(motorPWMB, 255);
+
+}
+
+void spinleft() {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+
+  analogWrite(motorPWMA, 120);
+  analogWrite(motorPWMB, 120);
+
+}
+
+void spinright() {
+  digitalWrite(led, HIGH);
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+
+  analogWrite(motorPWMA, 120);
+  analogWrite(motorPWMB, 120);
+
+}
+
+void stop() {
+  digitalWrite(led, LOW);
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, LOW);
+
+}
+
+float ping() {
+  unsigned long maxTime = 20000;
+  unsigned long us;
+  float inches;
+  // Hold triggerPin high for at least 10us
+  digitalWrite(triggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerPin, LOW);
+  // Measure length of high pulse on echoPin
+  us = pulseIn(echoPin, HIGH, maxTime);
+  // pulseIn returns 0 on timeout. Assume worst case.
+  if (us == 0) {
+    us = maxTime;
+  }
+  // Convert roundtrip microseconds to inches
+  inches = us * 0.013504 / 2;
+  return inches;
+}
+
+void loop() {
+  delay(60);
+  float inches = ping();
+  Serial.println(inches);
+  delay(60);
+
+  if (inches < 5) {
+    stop();
+    spinright();
+    delay(300);
+    stop();
+  }
+  else {
+    forward(150);
+    delay(200);
+    stop();
+  }
+}
